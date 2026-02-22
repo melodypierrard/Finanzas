@@ -3,204 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Finanzas 2026</title>
+    <title>Centro Financiero 2026</title>
     
-    <!-- Configuración para PWA (App Móvil) -->
+    <!-- PWA Setup -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#020617">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/10384/10384160.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; overflow-x: hidden; }
-        .safe-top { padding-top: env(safe-area-inset-top); }
-        .card-custom { background: white; border-radius: 30px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.04); transition: transform 0.2s; }
-        .card-custom:active { transform: scale(0.98); }
-        .income-gradient { background: linear-gradient(135deg, #10b981, #059669); }
-        .expense-gradient { background: linear-gradient(135deg, #ef4444, #dc2626); }
-        .main-gradient { background: linear-gradient(135deg, #1e293b, #0f172a); }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
         
-        /* Animaciones */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+        :root {
+            --app-bg: #f8fafc;
+            --card-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--app-bg);
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .safe-top { padding-top: env(safe-area-inset-top); }
+        
+        .glass-header {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+        }
+
+        .neo-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .btn-action {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-action:active {
+            transform: scale(0.92);
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            transition: width 0.5s ease-out;
+        }
+
+        /* Estilo para los inputs */
+        input::placeholder { color: #94a3b8; }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-32">
 
-    <!-- Header Estilo iOS/Android Premium -->
-    <div class="safe-top main-gradient text-white rounded-b-[40px] pb-12 shadow-2xl relative overflow-hidden">
-        <div class="px-8 py-6 flex justify-between items-center relative z-10">
+    <!-- HEADER / DASHBOARD -->
+    <header class="glass-header text-white pb-16 safe-top shadow-2xl relative overflow-hidden">
+        <div class="px-6 py-8 flex justify-between items-center relative z-10">
             <div>
-                <h1 class="text-xl font-extrabold tracking-tight">Financial<span class="text-blue-400">Hub</span></h1>
-                <p id="headerDate" class="text-[9px] font-bold opacity-40 uppercase tracking-widest"></p>
+                <h1 class="text-xl font-extrabold tracking-tight">CENTRO<span class="text-blue-500">PRO</span></h1>
+                <p id="headerDate" class="text-[10px] font-semibold opacity-40 uppercase tracking-[0.2em] mt-1"></p>
             </div>
-            <div class="bg-white/10 p-1 rounded-2xl flex backdrop-blur-md">
-                <button onclick="changeView('home')" id="navHome" class="px-4 py-2 rounded-xl text-[10px] font-bold uppercase transition bg-white text-slate-900">Inicio</button>
-                <button onclick="changeView('stats')" id="navStats" class="px-4 py-2 rounded-xl text-[10px] font-bold uppercase transition text-white/60">Stats</button>
+            <div class="flex gap-3">
+                <div class="bg-blue-500/20 px-3 py-1.5 rounded-full border border-blue-500/30">
+                    <span class="text-[10px] font-bold text-blue-400">STATUS: LIVE</span>
+                </div>
             </div>
         </div>
 
-        <div class="px-8 text-center mt-4 relative z-10">
-            <p class="text-[10px] font-bold opacity-30 uppercase tracking-widest mb-1">Balance Consolidado</p>
-            <h2 id="totalBalance" class="text-5xl font-black tracking-tighter animate-fade">$0</h2>
+        <div class="px-8 text-center mt-2 relative z-10">
+            <span class="text-[10px] font-bold opacity-30 uppercase tracking-[0.3em]">Capital Total</span>
+            <h2 id="totalBalance" class="text-5xl font-extrabold tracking-tighter my-2">$0</h2>
             
-            <div class="flex justify-center gap-6 mt-8">
-                <div class="bg-white/5 backdrop-blur-sm rounded-3xl p-4 flex-1">
-                    <p class="text-[8px] font-bold opacity-40 uppercase mb-1">Ingresos</p>
-                    <p id="totalInc" class="text-sm font-bold text-emerald-400">$0</p>
+            <div class="grid grid-cols-2 gap-4 mt-8">
+                <div class="bg-white/5 backdrop-blur-xl rounded-3xl p-4 border border-white/10">
+                    <p class="text-[9px] font-bold opacity-40 uppercase mb-1">Entradas</p>
+                    <p id="totalIncome" class="text-lg font-bold text-emerald-400">$0</p>
                 </div>
-                <div class="bg-white/5 backdrop-blur-sm rounded-3xl p-4 flex-1">
-                    <p class="text-[8px] font-bold opacity-40 uppercase mb-1">Gastos</p>
-                    <p id="totalExp" class="text-sm font-bold text-rose-400">$0</p>
+                <div class="bg-white/5 backdrop-blur-xl rounded-3xl p-4 border border-white/10">
+                    <p class="text-[9px] font-bold opacity-40 uppercase mb-1">Salidas</p>
+                    <p id="totalExpense" class="text-lg font-bold text-rose-400">$0</p>
                 </div>
             </div>
         </div>
-        
-        <!-- Decoración de fondo -->
-        <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+
+        <!-- Círculos decorativos -->
+        <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl"></div>
+    </header>
+
+    <!-- NAVEGACIÓN DE PESTAÑAS -->
+    <div class="px-6 -mt-8 relative z-20">
+        <div class="bg-white p-1.5 rounded-2xl flex shadow-xl border border-slate-100">
+            <button onclick="switchTab('main')" id="tab-main" class="flex-1 py-3 rounded-xl text-[10px] font-extrabold uppercase tracking-wider transition-all bg-slate-900 text-white">Transacciones</button>
+            <button onclick="switchTab('savings')" id="tab-savings" class="flex-1 py-3 rounded-xl text-[10px] font-extrabold uppercase tracking-wider transition-all text-slate-400">Ahorros</button>
+            <button onclick="switchTab('bills')" id="tab-bills" class="flex-1 py-3 rounded-xl text-[10px] font-extrabold uppercase tracking-wider transition-all text-slate-400">Agenda</button>
+        </div>
     </div>
 
-    <main id="view-home" class="px-6 -mt-8 space-y-6 relative z-20">
-        <!-- Panel de Registro -->
-        <div class="card-custom p-6 border border-slate-100/50">
-            <div class="flex gap-2 mb-4">
-                <button onclick="setTxType('exp')" id="tabExp" class="flex-1 py-3 rounded-2xl text-[10px] font-bold uppercase transition bg-slate-900 text-white shadow-lg">Gasto</button>
-                <button onclick="setTxType('inc')" id="tabInc" class="flex-1 py-3 rounded-2xl text-[10px] font-bold uppercase transition bg-slate-50 text-slate-400">Ingreso</button>
+    <!-- CONTENIDO: TRANSACCIONES -->
+    <main id="view-main" class="px-6 mt-8 space-y-6">
+        <div class="neo-card p-6">
+            <h4 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4 text-center">Nuevo Registro</h4>
+            <div class="flex gap-2 mb-4 bg-slate-50 p-1 rounded-xl">
+                <button onclick="setMode('exp')" id="mode-exp" class="flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all bg-white shadow-sm border border-slate-200">Gasto</button>
+                <button onclick="setMode('inc')" id="mode-inc" class="flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all text-slate-400">Ingreso</button>
             </div>
-            
-            <div class="space-y-3">
-                <div class="relative">
-                    <input type="text" id="desc" placeholder="¿Qué compraste?" class="w-full bg-slate-50 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-100 transition text-sm font-medium">
-                </div>
-                <div class="relative">
-                    <input type="number" id="amt" placeholder="0.00" class="w-full bg-slate-50 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-100 transition text-lg font-black">
-                    <span class="absolute right-4 top-4 text-slate-300 font-bold">$</span>
-                </div>
-                <button onclick="handleSave()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-100 active:scale-95 transition">Guardar Movimiento</button>
-            </div>
+            <input type="text" id="desc" placeholder="Concepto (ej. Alquiler)" class="w-full bg-slate-50 p-4 rounded-xl mb-3 outline-none border border-slate-100 text-sm">
+            <input type="number" id="amt" placeholder="0.00" class="w-full bg-slate-50 p-4 rounded-xl mb-5 outline-none border border-slate-100 text-xl font-extrabold">
+            <button onclick="saveRecord()" class="w-full bg-blue-600 text-white font-extrabold py-4 rounded-xl shadow-lg shadow-blue-200 btn-action uppercase text-xs tracking-widest">Añadir al registro</button>
         </div>
-
-        <!-- Lista de Movimientos -->
-        <div id="listContainer" class="space-y-3 pb-12">
-            <!-- Items generados por JS -->
-        </div>
+        <div id="historyList" class="space-y-3"></div>
     </main>
 
-    <main id="view-stats" class="hidden px-6 py-10 text-center animate-fade">
-        <div class="card-custom p-10">
-            <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
-            </div>
-            <h3 class="text-lg font-bold text-slate-800 tracking-tight">Análisis de Datos</h3>
-            <p class="text-xs text-slate-400 mt-2 leading-relaxed">Estamos procesando tus movimientos para mostrarte gráficos de torta y barras en la próxima actualización.</p>
-            <button onclick="changeView('home')" class="mt-8 text-blue-600 font-bold text-xs uppercase tracking-widest">Volver al inicio</button>
+    <!-- CONTENIDO: AHORROS -->
+    <main id="view-savings" class="hidden px-6 mt-8 space-y-6">
+        <div class="flex justify-between items-center px-2">
+            <h3 class="text-xl font-extrabold text-slate-800">Metas Pro</h3>
+            <button onclick="openModal('saving')" class="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-200 btn-action">+</button>
         </div>
+        <div id="savingsList" class="space-y-4"></div>
     </main>
 
-    <!-- Barra de Navegación Flotante -->
-    <nav class="fixed bottom-6 left-6 right-6 h-20 bg-white/80 backdrop-blur-xl rounded-[30px] flex justify-around items-center px-6 z-50 shadow-2xl border border-white/20">
-        <button onclick="changeView('home')" class="p-3 text-blue-600 bg-blue-50 rounded-2xl">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+    <!-- CONTENIDO: AGENDA/FACTURAS -->
+    <main id="view-bills" class="hidden px-6 mt-8 space-y-6">
+        <div class="flex justify-between items-center px-2">
+            <h3 class="text-xl font-extrabold text-slate-800">Calendario de Pagos</h3>
+            <button onclick="openModal('bill')" class="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-lg btn-action">+</button>
+        </div>
+        <div id="billsList" class="space-y-3"></div>
+    </main>
+
+    <!-- TAB BAR INFERIOR -->
+    <nav class="fixed bottom-6 left-6 right-6 h-20 bg-white/90 backdrop-blur-xl rounded-[30px] shadow-2xl border border-white/20 flex justify-around items-center px-6 z-50">
+        <button onclick="switchTab('main')" class="p-3 text-blue-600 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
         </button>
-        <button onclick="handleExport()" class="p-3 text-slate-300">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+        <button onclick="exportData()" class="p-3 text-slate-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5l5 5v11a2 2 0 01-2 2z"></path></svg>
         </button>
-        <button onclick="if(confirm('¿Borrar historial?')) { localStorage.clear(); location.reload(); }" class="p-3 text-slate-200">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        <button onclick="resetApp()" class="p-3 text-slate-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
         </button>
     </nav>
 
+    <!-- MODAL OVERLAY -->
+    <div id="modalOverlay" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-end">
+        <div class="w-full bg-white rounded-t-[40px] p-8 pb-12 shadow-2xl animate-modal-up">
+            <div id="modalContent"></div>
+            <button onclick="closeModal()" class="w-full mt-6 py-4 text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em]">Cerrar</button>
+        </div>
+    </div>
+
     <script>
-        let state = {
-            type: 'exp',
-            data: JSON.parse(localStorage.getItem('fin_v2026_db')) || []
+        // ESTADO GLOBAL
+        let currentMode = 'exp';
+        let db = {
+            records: JSON.parse(localStorage.getItem('cp26_recs')) || [],
+            savings: JSON.parse(localStorage.getItem('cp26_savs')) || [],
+            bills: JSON.parse(localStorage.getItem('cp26_bills')) || []
         };
 
-        function setTxType(t) {
-            state.type = t;
-            document.getElementById('tabExp').className = t === 'exp' ? 'flex-1 py-3 rounded-2xl text-[10px] font-bold uppercase transition bg-slate-900 text-white shadow-lg' : 'flex-1 py-3 rounded-2xl text-[10px] font-bold uppercase transition bg-slate-50 text-slate-400';
-            document.getElementById('tabInc').className = t === 'inc' ? 'flex-1 py-3 rounded-2xl text-[10px] font-bold uppercase transition bg-slate-900 text-white shadow-lg' : 'flex-1 py-3 rounded-2xl text-[10px] font-bold uppercase transition bg-slate-50 text-slate-400';
-        }
-
-        function changeView(v) {
-            document.getElementById('view-home').classList.toggle('hidden', v !== 'home');
-            document.getElementById('view-stats').classList.toggle('hidden', v !== 'stats');
-            document.getElementById('navHome').className = v === 'home' ? 'px-4 py-2 rounded-xl text-[10px] font-bold uppercase transition bg-white text-slate-900' : 'px-4 py-2 rounded-xl text-[10px] font-bold uppercase transition text-white/60';
-            document.getElementById('navStats').className = v === 'stats' ? 'px-4 py-2 rounded-xl text-[10px] font-bold uppercase transition bg-white text-slate-900' : 'px-4 py-2 rounded-xl text-[10px] font-bold uppercase transition text-white/60';
-        }
-
-        function handleSave() {
-            const desc = document.getElementById('desc').value;
-            const amt = parseFloat(document.getElementById('amt').value);
-            if(!desc || isNaN(amt)) return;
-
-            state.data.unshift({
-                id: Date.now(),
-                desc,
-                amt,
-                type: state.type,
-                date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
+        // GESTIÓN DE PESTAÑAS
+        function switchTab(tab) {
+            ['main', 'savings', 'bills'].forEach(v => {
+                document.getElementById('view-'+v).classList.add('hidden');
+                document.getElementById('tab-'+v).classList.remove('bg-slate-900', 'text-white');
+                document.getElementById('tab-'+v).classList.add('text-slate-400');
             });
+            document.getElementById('view-'+tab).classList.remove('hidden');
+            document.getElementById('tab-'+tab).classList.add('bg-slate-900', 'text-white');
+            document.getElementById('tab-'+tab).classList.remove('text-slate-400');
+            renderAll();
+        }
 
-            localStorage.setItem('fin_v2026_db', JSON.stringify(state.data));
+        // REGISTROS (GASTOS/INGRESOS)
+        function setMode(m) {
+            currentMode = m;
+            document.getElementById('mode-exp').className = m === 'exp' ? 'flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all bg-white shadow-sm border border-slate-200 text-slate-900' : 'flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all text-slate-400';
+            document.getElementById('mode-inc').className = m === 'inc' ? 'flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all bg-white shadow-sm border border-slate-200 text-slate-900' : 'flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all text-slate-400';
+        }
+
+        function saveRecord() {
+            const d = document.getElementById('desc').value;
+            const a = parseFloat(document.getElementById('amt').value);
+            if(!d || isNaN(a)) return;
+            db.records.unshift({ id: Date.now(), d, a, type: currentMode, date: new Date().toLocaleDateString('es-ES') });
+            localStorage.setItem('cp26_recs', JSON.stringify(db.records));
             document.getElementById('desc').value = '';
             document.getElementById('amt').value = '';
-            refreshUI();
+            renderAll();
         }
 
-        function deleteRecord(id) {
-            state.data = state.data.filter(i => i.id !== id);
-            localStorage.setItem('fin_v2026_db', JSON.stringify(state.data));
-            refreshUI();
+        function removeRecord(id) {
+            db.records = db.records.filter(r => r.id !== id);
+            localStorage.setItem('cp26_recs', JSON.stringify(db.records));
+            renderAll();
         }
 
-        function refreshUI() {
-            let bal = 0, inc = 0, exp = 0;
-            const container = document.getElementById('listContainer');
-            container.innerHTML = '<h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-2">Actividad Reciente</h4>';
+        // MODALES
+        function openModal(type) {
+            const overlay = document.getElementById('modalOverlay');
+            const content = document.getElementById('modalContent');
+            overlay.classList.remove('hidden');
+            
+            if(type === 'saving') {
+                content.innerHTML = `
+                    <h4 class="text-xl font-extrabold text-slate-800 mb-6">Nueva Meta</h4>
+                    <input type="text" id="msName" placeholder="¿Para qué es el ahorro?" class="w-full bg-slate-50 p-4 rounded-2xl mb-3 border border-slate-100">
+                    <input type="number" id="msTarget" placeholder="Monto total ($)" class="w-full bg-slate-50 p-4 rounded-2xl mb-3 border border-slate-100">
+                    <input type="date" id="msDate" class="w-full bg-slate-50 p-4 rounded-2xl mb-6 border border-slate-100 text-slate-400">
+                    <button onclick="addSavingGoal()" class="w-full bg-blue-600 text-white font-extrabold py-4 rounded-2xl shadow-xl">Activar Objetivo</button>
+                `;
+            } else {
+                content.innerHTML = `
+                    <h4 class="text-xl font-extrabold text-slate-800 mb-6">Nuevo Vencimiento</h4>
+                    <input type="text" id="mbName" placeholder="Servicio o Factura" class="w-full bg-slate-50 p-4 rounded-2xl mb-3 border border-slate-100">
+                    <input type="number" id="mbAmt" placeholder="Monto a pagar ($)" class="w-full bg-slate-50 p-4 rounded-2xl mb-3 border border-slate-100">
+                    <input type="date" id="mbDate" class="w-full bg-slate-50 p-4 rounded-2xl mb-6 border border-slate-100 text-slate-400">
+                    <button onclick="addBillReminder()" class="w-full bg-slate-900 text-white font-extrabold py-4 rounded-2xl shadow-xl">Agendar Pago</button>
+                `;
+            }
+        }
 
-            state.data.forEach(item => {
-                if(item.type === 'inc') inc += item.amt; else exp += item.amt;
-                
-                container.innerHTML += `
-                    <div class="card-custom p-5 flex justify-between items-center animate-fade">
+        function closeModal() { document.getElementById('modalOverlay').classList.add('hidden'); }
+
+        function addSavingGoal() {
+            const name = document.getElementById('msName').value;
+            const target = parseFloat(document.getElementById('msTarget').value);
+            const date = document.getElementById('msDate').value;
+            if(!name || isNaN(target)) return;
+            db.savings.push({ id: Date.now(), name, target, current: 0, date });
+            localStorage.setItem('cp26_savs', JSON.stringify(db.savings));
+            closeModal();
+            renderAll();
+        }
+
+        function addBillReminder() {
+            const name = document.getElementById('mbName').value;
+            const amt = parseFloat(document.getElementById('mbAmt').value);
+            const date = document.getElementById('mbDate').value;
+            if(!name || isNaN(amt)) return;
+            db.bills.push({ id: Date.now(), name, amt, date, paid: false });
+            localStorage.setItem('cp26_bills', JSON.stringify(db.bills));
+            closeModal();
+            renderAll();
+        }
+
+        function updateSaving(id, amount) {
+            const s = db.savings.find(x => x.id === id);
+            s.current += amount;
+            localStorage.setItem('cp26_savs', JSON.stringify(db.savings));
+            renderAll();
+        }
+
+        // RENDERIZADO
+        function renderAll() {
+            // Totales
+            const inc = db.records.filter(r => r.type === 'inc').reduce((a,b) => a + b.a, 0);
+            const exp = db.records.filter(r => r.type === 'exp').reduce((a,b) => a + b.a, 0);
+            document.getElementById('totalBalance').innerText = `$${(inc-exp).toLocaleString()}`;
+            document.getElementById('totalIncome').innerText = `$${inc.toLocaleString()}`;
+            document.getElementById('totalExpense').innerText = `$${exp.toLocaleString()}`;
+
+            // Lista Transacciones
+            const hList = document.getElementById('historyList');
+            hList.innerHTML = '<h4 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-2 mb-2">Historial Reciente</h4>';
+            db.records.slice(0, 15).forEach(r => {
+                hList.innerHTML += `
+                    <div class="neo-card p-5 flex justify-between items-center animate-fade-in">
                         <div class="flex items-center gap-4">
-                            <div class="w-11 h-11 rounded-2xl ${item.type === 'inc' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'} flex items-center justify-center font-bold text-[9px] uppercase tracking-tighter">
-                                ${item.date}
+                            <div class="w-10 h-10 rounded-2xl bg-slate-50 flex flex-col items-center justify-center border border-slate-100">
+                                <span class="text-[8px] font-black text-slate-300 uppercase">${r.date.split('/')[1]}</span>
+                                <span class="text-xs font-bold text-slate-800">${r.date.split('/')[0]}</span>
                             </div>
                             <div>
-                                <p class="font-bold text-slate-800 text-sm leading-none mb-1">${item.desc}</p>
-                                <p class="text-[9px] font-bold text-slate-300 uppercase">${item.type === 'inc' ? 'Abono' : 'Cargo'}</p>
+                                <p class="font-bold text-slate-800 text-sm leading-tight">${r.d}</p>
+                                <p class="text-[9px] font-bold text-slate-300 uppercase">${r.type === 'inc' ? 'Crédito' : 'Débito'}</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-4">
-                            <span class="font-black text-sm ${item.type === 'inc' ? 'text-emerald-500' : 'text-slate-900'}">
-                                ${item.type === 'inc' ? '+' : '-'}$${item.amt.toLocaleString()}
+                            <span class="font-extrabold text-sm ${r.type === 'inc' ? 'text-emerald-500' : 'text-slate-900'}">
+                                ${r.type === 'inc' ? '+' : '-'}$${r.a.toLocaleString()}
                             </span>
-                            <button onclick="deleteRecord(${item.id})" class="text-slate-200">✕</button>
+                            <button onclick="removeRecord(${r.id})" class="text-slate-200 p-1">✕</button>
                         </div>
                     </div>`;
             });
 
-            document.getElementById('totalBalance').innerText = `$${(inc - exp).toLocaleString()}`;
-            document.getElementById('totalInc').innerText = `$${inc.toLocaleString()}`;
-            document.getElementById('totalExp').innerText = `$${exp.toLocaleString()}`;
-        }
+            // Lista Ahorros
+            const sList = document.getElementById('savingsList');
+            sList.innerHTML = '';
+            db.savings.forEach(s => {
+                const perc = Math.min((s.current / s.target) * 100, 100);
+                sList.innerHTML += `
+                    <div class="neo-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="font-extrabold text-slate-800 text-lg">${s.name}</p>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Objetivo: $${s.target.toLocaleString()}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-blue-600 font-extrabold text-xl leading-none">$${s.current.toLocaleString()}</p>
+                                <p class="text-[9px] font-bold text-slate-300 uppercase mt-1">${Math.round(perc)}% completado</p>
+                            </div>
+                        </div>
+                        <div class="progress-bar mb-6"><div class="progress-fill" style="width: ${perc}%"></div></div>
+                        <div class="flex gap-2">
+                            <button onclick="updateSaving(${s.id}, 5000)" class="flex-1 bg-slate-900 text-white text-[10px] font-black py-3 rounded-xl">+ $5.000</button>
+                            <button onclick="updateSaving(${s.id}, 10000)" class="flex-1 bg-slate-900 text-white text-[10px] font-black py-3 rounded-xl">+ $10.000</button>
+                            <button onclick="db.savings = db.savings.filter(x => x.id !== ${s.id}); localStorage.setItem('cp26_savs', JSON.stringify(db.savings)); renderAll();" class="p-3 bg-slate-100 rounded-xl text-slate-300">✕</button>
+                        </div>
+                    </div>`;
+            });
 
-        function handleExport() {
-            const blob = new Blob([JSON.stringify(state.data)], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = 'backup_finanzas_2026.json'; a.click();
-        }
-
-        window.onload = () => {
-            const d = new Date();
-            document.getElementById('headerDate').innerText = d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-            refreshUI();
-        };
-    </script>
-</body>
-</html>
-
+            // Lista Bills
+            const bList = document.getElementById('billsList');
+            bList.innerHTML = '';
+            db.bills.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(b => {
+                const d = new Date(b.date);
+                bList.innerHTML += `
+                    <div class="neo-card p-5 flex justify-between items-center ${b.paid ? 'opacity-40 grayscale' : ''}">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-900 text-white flex flex-col items-center justify-center">
+                                <span class="text-[8px] font-bold uppercase opacity-50">${d.toLocaleDateString('es-ES', {month:'short'})}</span>
+                                <span class="text-sm font-black">${d.getDate() + 1}</span>
+                            </div>
+                            <div>
+                                <p class="font-extrabold text-slate-800 text-sm leading-tight">${b.name}</p>
+                                <p class="text-[11px] font-bold text-blue-500">$${b.amt.toLocaleString()}</p>
+                            </div>
+                        </div>
+                        <button onclick="b.paid = !b.paid; localStora
